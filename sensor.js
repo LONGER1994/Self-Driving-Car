@@ -7,10 +7,12 @@ class Sensor {
 
         this.rays = [];
         this.readings = [];
+        this.roadBorders = [];
     }
 
     update(roadBorders) {
         this.#castRays();
+        this.roadBorders = roadBorders;
         this.readings = [];
         for (let i = 0; i < this.rays.length; i++) {
             this.readings.push(
@@ -37,9 +39,9 @@ class Sensor {
         if (touches.length == 0) {
             return null
         } else {
-            const offsets = touches.map(e => e.offset);
+            const offsets = touches.map(touch => touch.offset);
             const minOffset = Math.min(...offsets);
-            return touches.find(e => e.offset == minOffset);
+            return touches.find(touch => touch.offset == minOffset);
         }
     }
 
@@ -72,31 +74,87 @@ class Sensor {
                 end = this.readings[i];
             };
 
-            ctx.beginPath();
-            ctx.lineWidth = 2;
-            ctx.strokeStyle = 'yellow';
-            ctx.moveTo(
-                this.rays[i][0].x,
-                this.rays[i][0].y
-            );
-            ctx.lineTo(
-                end.x,
-                end.y
-            );
-            ctx.stroke();
+            // 原始code，車子出路邊之後，sensor的顏色會反轉
+            // ctx.beginPath();
+            // ctx.lineWidth = 2;
+            // ctx.strokeStyle = 'yellow';
+            // ctx.moveTo(
+            //     this.rays[i][0].x,
+            //     this.rays[i][0].y
+            // );
+            // ctx.lineTo(
+            //     end.x,
+            //     end.y
+            // );
+            // ctx.stroke();
 
-            ctx.beginPath();
-            ctx.lineWidth = 2;
-            ctx.strokeStyle = 'black';
-            ctx.moveTo(
-                end.x,
-                end.y
-            );
-            ctx.lineTo(
-                this.rays[i][1].x,
-                this.rays[i][1].y
-            );
-            ctx.stroke();
+            // ctx.beginPath();
+            // ctx.lineWidth = 2;
+            // ctx.strokeStyle = 'black';
+            // ctx.moveTo(
+            //     end.x,
+            //     end.y
+            // );
+            // ctx.lineTo(
+            //     this.rays[i][1].x,
+            //     this.rays[i][1].y
+            // );
+            // ctx.stroke();
+
+            // 我自己加的變更，需要把roadboarders讀進來到sensor中，加上this.roadboarders = [];到constructor中
+            if (this.car.x < this.roadBorders[1][1].x && this.car.x > this.roadBorders[0][0].x) {
+                ctx.beginPath();
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = 'yellow';
+                ctx.moveTo(
+                    this.rays[i][0].x,
+                    this.rays[i][0].y
+                );
+                ctx.lineTo(
+                    end.x,
+                    end.y
+                );
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = 'black';
+                ctx.moveTo(
+                    end.x,
+                    end.y
+                );
+                ctx.lineTo(
+                    this.rays[i][1].x,
+                    this.rays[i][1].y
+                );
+                ctx.stroke();
+            } else {
+                ctx.beginPath();
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = 'black';
+                ctx.moveTo(
+                    this.rays[i][0].x,
+                    this.rays[i][0].y
+                );
+                ctx.lineTo(
+                    end.x,
+                    end.y
+                );
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = 'yellow';
+                ctx.moveTo(
+                    end.x,
+                    end.y
+                );
+                ctx.lineTo(
+                    this.rays[i][1].x,
+                    this.rays[i][1].y
+                );
+                ctx.stroke();
+            }
 
         }
     }
